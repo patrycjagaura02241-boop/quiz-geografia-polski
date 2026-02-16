@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Czy wiesz wszystko o geografii Polski?</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#001f3f,#003f7f,#0074D9);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.quiz-box{
+    background:rgba(0,0,0,0.6);
+    padding:40px;
+    border-radius:20px;
+    width:90%;
+    max-width:700px;
+    box-shadow:0 0 30px rgba(0,180,255,0.5);
+    text-align:center;
+    animation:fadeIn 1s ease;
+}
+
+h1{
+    color:#4fc3ff;
+    margin-bottom:20px;
+}
+
+#progress{
+    height:10px;
+    background:#222;
+    border-radius:10px;
+    margin-bottom:30px;
+    overflow:hidden;
+}
+
+#bar{
+    height:100%;
+    width:0%;
+    background:#4fc3ff;
+    transition:0.4s;
+}
+
+.answers button{
+    display:block;
+    width:100%;
+    margin:10px 0;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    background:rgba(79,195,255,0.2);
+    color:white;
+    transition:0.3s;
+}
+
+.answers button:hover{
+    background:#4fc3ff;
+    color:black;
+    transform:scale(1.05);
+}
+
+#nextBtn{
+    margin-top:20px;
+    padding:10px 30px;
+    border:none;
+    border-radius:20px;
+    background:#4fc3ff;
+    color:black;
+    cursor:pointer;
+    display:none;
+}
+
+#result{
+    font-size:24px;
+    margin-top:20px;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="quiz-box">
+<h1>Czy wiesz wszystko o geografii Polski?</h1>
+
+<div id="progress"><div id="bar"></div></div>
+
+<div id="question"></div>
+<div class="answers" id="answers"></div>
+<button id="nextBtn">Następne pytanie</button>
+
+<div id="result"></div>
+</div>
+
+<script>
+const questions = [
+["Najwyższy szczyt Polski to?",["Rysy","Giewont","Babia Góra","Kasprowy Wierch"],0],
+["Ile województw ma Polska?",["14","16","18","20"],1],
+["Największe województwo powierzchniowo?",["Mazowieckie","Lubelskie","Wielkopolskie","Podlaskie"],0],
+["Najdłuższa rzeka Polski?",["Odra","Warta","Wisła","Bug"],2],
+["Największy park narodowy?",["Biebrzański","Tatrzański","Kampinoski","Białowieski"],0],
+["Najgłębsze jezioro?",["Hańcza","Śniardwy","Mamry","Drawsko"],0],
+["Najwyższy szczyt Sudetów?",["Śnieżka","Śnieżnik","Szczeliniec","Kopa"],0],
+["Najstarszy park narodowy?",["Białowieski","Pieniński","Tatrzański","Wigierski"],1],
+["Morze Bałtyckie jest morzem?",["Otwartym","Śródlądowym","Półzamkniętym","Tropikalnym"],2],
+["Najdłuższe pasmo górskie w Polsce?",["Beskidy","Tatry","Sudety","Bieszczady"],0],
+["Największe jezioro?",["Śniardwy","Mamry","Hańcza","Niegocin"],0],
+["Stolica woj. małopolskiego?",["Kraków","Tarnów","Nowy Sącz","Zakopane"],0],
+["Najwyższy wodospad?",["Kamieńczyka","Siklawa","Szklarki","Wilczki"],1],
+["Góry Stołowe należą do?",["Karpat","Sudetów","Tatr","Beskidów"],1],
+["Największa nizina?",["Mazowiecka","Śląska","Podlaska","Wielkopolska"],0],
+["Park z wydmami ruchomymi?",["Słowiński","Woliński","Bory Tucholskie","Narwiański"],0],
+["Najbardziej na północ wysunięty punkt?",["Hel","Jastrzębia Góra","Świnoujście","Ustka"],1],
+["Najwyżej położone miasto?",["Zakopane","Karpacz","Szklarska Poręba","Wisła"],0],
+["Największy port morski?",["Gdynia","Gdańsk","Szczecin","Świnoujście"],1],
+["Największy park bagienny?",["Biebrzański","Narwiański","Poleski","Wigierski"],0]
+];
+
+let current=0;
+let score=0;
+
+const questionEl=document.getElementById("question");
+const answersEl=document.getElementById("answers");
+const nextBtn=document.getElementById("nextBtn");
+const resultEl=document.getElementById("result");
+const bar=document.getElementById("bar");
+
+function loadQuestion(){
+    nextBtn.style.display="none";
+    questionEl.innerHTML=`<h2>${current+1}. ${questions[current][0]}</h2>`;
+    answersEl.innerHTML="";
+    questions[current][1].forEach((ans,index)=>{
+        const btn=document.createElement("button");
+        btn.innerText=ans;
+        btn.onclick=()=>selectAnswer(index);
+        answersEl.appendChild(btn);
+    });
+    bar.style.width=((current)/questions.length)*100+"%";
+}
+
+function selectAnswer(index){
+    if(index===questions[current][2]) score++;
+    nextBtn.style.display="block";
+}
+
+nextBtn.onclick=()=>{
+    current++;
+    if(current<questions.length){
+        loadQuestion();
+    }else{
+        showResult();
+    }
+}
+
+function showResult(){
+    bar.style.width="100%";
+    questionEl.innerHTML="";
+    answersEl.innerHTML="";
+    nextBtn.style.display="none";
+    resultEl.innerHTML=`Twój wynik: ${score} / 20`;
+
+    if(score>=16){
+        resultEl.innerHTML+="<br>🏆 MISTRZ GEOGRAFII POLSKI!";
+        confetti({particleCount:200,spread:120});
+    }
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
